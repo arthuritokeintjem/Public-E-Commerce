@@ -30,7 +30,7 @@ def load_rfm_data():
     Memuat dataset RFM yang telah dihitung dan disimpan sebagai CSV.
     Pastikan file 'rfm.csv' sudah tersimpan di folder 'data'.
     """
-    rfm = pd.read_csv('data/rfm.csv')
+    rfm = pd.read_csv('rfm.csv')
     return rfm
 
 # ---------------------------
