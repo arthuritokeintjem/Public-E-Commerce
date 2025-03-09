@@ -21,7 +21,7 @@ def load_data():
     order_reviews = pd.read_csv('order_reviews_imputed.csv')
     orders = pd.read_csv('orders_clean.csv')
     products = pd.read_csv('products_clean.csv')
-    geolocation = pd.read_csv('geolocation_clean.csv')
+    geolocation = pd.read_csv('geolocation_sample.csv')
     return order_reviews, orders, products, geolocation
 
 @st.cache_data
