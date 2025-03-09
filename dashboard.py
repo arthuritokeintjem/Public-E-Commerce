@@ -13,10 +13,10 @@ def load_data():
     """
     Memuat file CSV hasil cleaning.
     """
-    order_reviews = pd.read_csv('order_reviews_imputed.csv')
-    orders = pd.read_csv('orders_clean.csv')
-    products = pd.read_csv('products_clean.csv')
-    geolocation = pd.read_csv('geolocation_sample.csv')
+    order_reviews = pd.read_csv('data/order_reviews_imputed.csv')
+    orders = pd.read_csv('data/orders_clean.csv')
+    products = pd.read_csv('data/products_clean.csv')
+    geolocation = pd.read_csv('data/geolocation_sample.csv')
     return order_reviews, orders, products, geolocation
 
 @st.cache_data
@@ -24,7 +24,7 @@ def load_rfm_data():
     """
     Memuat dataset RFM yang telah dihitung dan disimpan sebagai CSV.
     """
-    rfm = pd.read_csv('rfm.csv')
+    rfm = pd.read_csv('data/rfm.csv')
     return rfm
 
 # ---------------------------
