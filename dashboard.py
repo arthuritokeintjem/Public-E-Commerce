@@ -12,11 +12,6 @@ from streamlit_folium import st_folium
 def load_data():
     """
     Memuat file CSV hasil cleaning.
-    Pastikan file-file berikut ada di folder 'data':
-    - order_reviews_imputed.csv
-    - orders_clean.csv
-    - products_clean.csv
-    - geolocation_clean.csv
     """
     order_reviews = pd.read_csv('order_reviews_imputed.csv')
     orders = pd.read_csv('orders_clean.csv')
@@ -28,7 +23,6 @@ def load_data():
 def load_rfm_data():
     """
     Memuat dataset RFM yang telah dihitung dan disimpan sebagai CSV.
-    Pastikan file 'rfm.csv' sudah tersimpan di folder 'data'.
     """
     rfm = pd.read_csv('rfm.csv')
     return rfm
@@ -39,7 +33,6 @@ def load_rfm_data():
 def plot_top_10_categories(orders, products):
     """
     Visualisasi ini menampilkan 10 kategori produk dengan jumlah produk terbanyak.
-    (Anda dapat menyesuaikan logika ini untuk menghitung total pendapatan jika data order_items tersedia.)
     """
     # Contoh: hitung jumlah produk per kategori
     cat_count = products.groupby('product_category_name').size().reset_index(name='counts')
