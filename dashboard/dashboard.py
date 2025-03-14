@@ -195,7 +195,81 @@ def plot_geospatial(geolocation):
     return st_map
 
 # ---------------------------
-# 8. Streamlit Utama
+# 8. Fitur Interaktif: Filtering berdasarkan rentang tanggal (order date)
+# ---------------------------
+def plot_orders_over_time(orders):
+    """
+    Menampilkan tren jumlah pesanan berdasarkan rentang tanggal yang dipilih.
+    """
+    orders['order_purchase_timestamp'] = pd.to_datetime(orders['order_purchase_timestamp'])
+
+    # Sidebar filter untuk memilih rentang tanggal
+    min_date = orders['order_purchase_timestamp'].min().date()
+    max_date = orders['order_purchase_timestamp'].max().date()
+    start_date, end_date = st.sidebar.date_input(
+        "Pilih Rentang Tanggal",
+        [min_date, max_date],
+        min_value=min_date,
+        max_value=max_date
+    )
+
+    # Filter data berdasarkan tanggal yang dipilih
+    filtered_orders = orders[
+        (orders['order_purchase_timestamp'].dt.date >= start_date) &
+        (orders['order_purchase_timestamp'].dt.date <= end_date)
+    ]
+
+    # Hitung jumlah pesanan per tanggal
+    orders_per_day = filtered_orders.groupby(filtered_orders['order_purchase_timestamp'].dt.date).size().reset_index(name='order_count')
+
+    # Visualisasi data
+    fig, ax = plt.subplots(figsize=(12, 6))
+    sns.lineplot(x='order_purchase_timestamp', y='order_count', data=orders_per_day, ax=ax, marker='o', color='blue')
+    ax.set_title(f'Jumlah Pesanan dari {start_date} sampai {end_date}', fontsize=15)
+    ax.set_xlabel('Tanggal', fontsize=12)
+    ax.set_ylabel('Jumlah Pesanan', fontsize=12)
+    plt.xticks(rotation=45)
+    plt.grid(True, linestyle='--', alpha=0.7)
+    st.pyplot(fig)
+
+# ---------------------------
+# 9. Fitur Interaktif: Filtering berdasarkan kategori produk
+# ---------------------------
+def plot_filtered_top_selling_products(order_items, products, products_category):
+    """
+    Menampilkan jumlah penjualan per kategori produk berdasarkan filter yang dipilih.
+    """
+    products_order_items = pd.merge(products, order_items, on='product_id')
+    products_category_order_items = pd.merge(products_category, products_order_items, on='product_category_name')
+
+    # List semua kategori unik
+    all_categories = sorted(products_category_order_items['product_category_name_english'].unique())
+
+    # Sidebar: Dropdown untuk memilih kategori produk
+    selected_category = st.sidebar.selectbox("Pilih Kategori Produk", ["Semua Kategori"] + all_categories)
+
+    # Filter data berdasarkan kategori yang dipilih
+    if selected_category != "Semua Kategori":
+        filtered_data = products_category_order_items[products_category_order_items['product_category_name_english'] == selected_category]
+    else:
+        filtered_data = products_category_order_items
+
+    # Hitung jumlah item terjual per kategori
+    top_category = filtered_data['product_category_name_english'].value_counts().reset_index()
+    top_category.columns = ['Category', 'Item Count']
+    top_category = top_category.sort_values(by='Item Count', ascending=False).head(10)
+
+    # Membuat visualisasi
+    fig, ax = plt.subplots(figsize=(12, 6))
+    sns.barplot(x='Item Count', y='Category', data=top_category, palette='crest', ax=ax)
+    ax.set_title(f'Top 10 Best Selling Product Categories {"(Filtered)" if selected_category != "Semua Kategori" else ""}', fontsize=15)
+    ax.set_xlabel('Item Count', fontsize=12)
+    ax.set_ylabel('Category', fontsize=12)
+    ax.grid(axis='x', linestyle='--', alpha=0.7)
+    st.pyplot(fig)
+
+# ---------------------------
+# 10. Streamlit Utama
 # ---------------------------
 def main():
     st.set_page_config(page_title="E-Commerce Analysis Dashboard", layout="wide")
@@ -209,6 +283,8 @@ def main():
         "Customer Segmentation",
         "Payment Preferences",
         "Top-Selling Products",
+        "Top Selling Products (Category Filter)",
+        "Order Trends (Date Filter)",
         "Delivery Performance",
         "Customer Satisfaction",
         "Geospatial Analysis"
@@ -251,6 +327,14 @@ def main():
 - Insight ini sangat berguna untuk pengambilan keputusan terkait inventaris dan strategi promosi agar lebih fokus pada kategori yang paling menguntungkan.
         """)
     
+    elif menu == "Order Trends (Date Filter)":
+        st.subheader("Order Trends Over Time")
+        plot_orders_over_time(orders)
+
+    elif menu == "Top Selling Products (Category Filter)":
+        st.subheader("Top Selling Products with Category Filter")
+        plot_filtered_top_selling_products(order_items, products, products_category)
+
     elif menu == "Delivery Performance":
         st.subheader("Delivery Performance")
         fig1, fig2 = plot_delivery_performance(orders)
