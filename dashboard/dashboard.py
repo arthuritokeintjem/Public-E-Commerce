@@ -240,13 +240,10 @@ def plot_filtered_top_selling_products(order_items, products, products_category)
     all_categories = sorted(products_category_order_items['product_category_name_english'].unique())
 
     # Sidebar: Dropdown untuk memilih kategori produk
-    selected_category = st.sidebar.selectbox("Pilih Kategori Produk", ["Semua Kategori"] + all_categories)
+    selected_category = st.sidebar.selectbox("Pilih Kategori Produk", all_categories)
 
     # Filter data berdasarkan kategori yang dipilih
-    if selected_category != "Semua Kategori":
-        filtered_data = products_category_order_items[products_category_order_items['product_category_name_english'] == selected_category]
-    else:
-        filtered_data = products_category_order_items
+    filtered_data = products_category_order_items[products_category_order_items['product_category_name_english'] == selected_category]
 
     # Hitung jumlah item terjual per kategori
     top_category = filtered_data['product_category_name_english'].value_counts().reset_index()
@@ -256,7 +253,7 @@ def plot_filtered_top_selling_products(order_items, products, products_category)
     # Membuat visualisasi
     fig, ax = plt.subplots(figsize=(12, 6))
     sns.barplot(x='Item Count', y='Category', data=top_category, palette='crest', ax=ax)
-    ax.set_title(f'Top 10 Best Selling Product Categories {"(Filtered)" if selected_category != "Semua Kategori" else ""}', fontsize=15)
+    ax.set_title(f'Total Selling Product Categories {"(Filtered)" if selected_category != "Semua Kategori" else ""}', fontsize=15)
     ax.set_xlabel('Item Count', fontsize=12)
     ax.set_ylabel('Category', fontsize=12)
     ax.grid(axis='x', linestyle='--', alpha=0.7)
@@ -280,7 +277,7 @@ def main():
         "Delivery Performance",
         "Customer Satisfaction",
         "Geospatial Analysis",
-        "Top Selling Products (Category Filter)",
+        "Total Selling Products (Category Filter)",
         "Order Trends (Date Filter)"
     ])
     
@@ -358,8 +355,8 @@ def main():
         st.subheader("Order Trends Over Time")
         plot_orders_over_time(orders)
 
-    elif menu == "Top Selling Products (Category Filter)":
-        st.subheader("Top Selling Products with Category Filter")
+    elif menu == "Total Selling Products (Category Filter)":
+        st.subheader("Total Selling Products with Category Filter")
         plot_filtered_top_selling_products(order_items, products, products_category)
 
     st.write("---")
